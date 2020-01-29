@@ -16,6 +16,11 @@
            
         }
 
+        public void incrementarQtdeMovimentos()
+        {
+            qtdeMovimentos++;
+        }
+
 
     }
 }

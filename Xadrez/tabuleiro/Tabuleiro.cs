@@ -40,6 +40,16 @@
             p.posicao = pos;
         }
 
+        public Peca retirarPeca(Posicao pos)
+        {
+            if (peca(pos) == null)
+                return null;
+            Peca aux = peca(pos);
+            aux.posicao = null; //deixando a posição da peca livre
+            pecas[pos.linha, pos.coluna] = null; //retirando a peca da matriz pecas
+            return aux; //retornará a peça que foi retirada
+        }
+
         public bool posicaoValida(Posicao pos)
         {
             if (pos.linha < 0 || pos.linha >= linhas || pos.coluna < 0 || pos.coluna >= colunas)
@@ -54,6 +64,7 @@
                 throw new TabuleiroException("Posição inválida!");
             }
         }
+
 
 
     }
