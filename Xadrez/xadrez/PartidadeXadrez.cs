@@ -67,9 +67,14 @@ namespace xadrez
             {
                 xeque = false;
             }
-
-            turno++;
-            mudaJogador();
+            if (testeXequeMate(adversaria(jogadorAtual))) {
+                terminada = true;
+                // se o jogador adversário estiver em xequemate, a partida termina.
+            } else
+            {
+                turno++;
+                mudaJogador();
+            }            
         }
 
         public void validarPosicaoOrigem(Posicao pos)
@@ -161,6 +166,37 @@ namespace xadrez
                 }
             }
             return false;
+        }
+
+        public bool testeXequeMate(Cor cor)
+        {
+            if (!estaEmXeque(cor)) // se não estiver em xeque, retornará falso
+            {
+                return false;
+            }
+            foreach (Peca x in pecasEmJogo(cor)) { 
+                bool[,] mat = x.movimentosPossiveis(); //matriz de movs possiveis de cada peça em jogo
+                for (int i = 0; i < x.posicao.linha; i++) //percorrendo linhas
+                {
+                    for (int j = 0; j < x.posicao.coluna; j++) //percorrendo colunas
+                    {
+                        if (mat[i,j]) //se tiver um movimento possível naquela linha e coluna
+                        {
+                            Posicao destino = new Posicao(i, j);
+                            Peca pecaCapturada = executarMovimento(x.posicao, destino); //vai executar o movimento
+                            //a pecaCapturada só vai existir se tinha peça do adversário no destino
+                            bool testeXeque = estaEmXeque(cor); 
+                            desfazMovimento(x.posicao, destino, pecaCapturada);
+                            if (!testeXeque)
+                            {
+                                return false;
+                            }
+
+                        }
+                    }
+                }                
+            }
+            return true; // se depois de tentar todas as jogadas possíveis nenhuma retirar do xeque, está em xequeMate (true)
         }
 
 
