@@ -95,7 +95,7 @@ namespace xadrez
 
         public void validarPosicaoDestino(Posicao origem, Posicao destino)
         {
-            if (!tab.peca(origem).poderMoverPara(destino))
+            if (!tab.peca(origem).movimentoPossivel(destino))
                 throw new TabuleiroException("Posição de destino inválida! ");
         }
 
@@ -182,11 +182,12 @@ namespace xadrez
                     {
                         if (mat[i,j]) //se tiver um movimento possível naquela linha e coluna
                         {
+                            Posicao origem = x.posicao;
                             Posicao destino = new Posicao(i, j);
-                            Peca pecaCapturada = executarMovimento(x.posicao, destino); //vai executar o movimento
+                            Peca pecaCapturada = executarMovimento(origem, destino); //vai executar o movimento
                             //a pecaCapturada só vai existir se tinha peça do adversário no destino
                             bool testeXeque = estaEmXeque(cor); 
-                            desfazMovimento(x.posicao, destino, pecaCapturada);
+                            desfazMovimento(origem, destino, pecaCapturada);
                             if (!testeXeque)
                             {
                                 return false;
@@ -223,6 +224,5 @@ namespace xadrez
             colocarNovaPeca('d', 8, new Rei(tab, Cor.Preta));
 
         }
-
     }
 }
