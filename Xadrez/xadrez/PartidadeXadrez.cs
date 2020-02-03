@@ -25,7 +25,7 @@ namespace xadrez
             vulneravelEnPassant = null;
             pecas = new HashSet<Peca>();
             capturadas = new HashSet<Peca>();
-            colocarPecas();            
+            colocarPecas();
         }
 
         public Peca executarMovimento(Posicao origem, Posicao destino)
@@ -91,7 +91,7 @@ namespace xadrez
                 capturadas.Remove(pecaCapturada);
             }
             tab.colocarPeca(p, origem);
-           
+
             // #jogadaespecial roque pequeno
             if (p is Rei && destino.coluna == origem.coluna + 2) // se for um movimento de roque pequeno
             {
@@ -141,29 +141,48 @@ namespace xadrez
                 desfazMovimento(origem, destino, pecaCapturada);
                 throw new TabuleiroException("Você não pode se colocar em xeque!");
             }
+
+            Peca p = tab.peca(destino);
+
+            // #jogadaespecial promocao
+            if (p is Peao)
+            {
+                if ((p.cor == Cor.Branca && destino.linha == 0) || (p.cor == Cor.Preta && destino.linha == 7)) //peao chega ao final tabuleiro
+                {
+                    p = tab.retirarPeca(destino); //retira o peao do tabuleiro
+                    pecas.Remove(p); //remove o peao das pecas em jogo
+                    Peca dama = new Dama(tab, p.cor); //cria nova peca dama
+                    tab.colocarPeca(dama, destino); //coloca a dama onde estava o peao
+                    pecas.Add(dama); //add dama às pecas do jogo
+                }
+            }
+
             if (estaEmXeque(adversaria(jogadorAtual)))
             {
                 xeque = true;
-            } else
+            }
+            else
             {
                 xeque = false;
             }
-            if (testeXequeMate(adversaria(jogadorAtual))) {
+            if (testeXequeMate(adversaria(jogadorAtual)))
+            {
                 terminada = true;
                 // se o jogador adversário estiver em xequemate, a partida termina.
-            } else
+            }
+            else
             {
                 turno++;
                 mudaJogador();
             }
 
-            Peca p = tab.peca(destino);
-
             // #jogadaespecial En Passant
-            if (p is Peao && (destino.linha == origem.linha - 2 || destino.linha == origem.linha + 2)) {
+            if (p is Peao && (destino.linha == origem.linha - 2 || destino.linha == origem.linha + 2))
+            {
                 // se a peça é peão e moveu 2 casas (primeira jogada)
                 vulneravelEnPassant = p; //a peça estará vulnerável ao en passant
-            } else
+            }
+            else
             {
                 vulneravelEnPassant = null;
             }
@@ -267,19 +286,20 @@ namespace xadrez
             {
                 return false;
             }
-            foreach (Peca x in pecasEmJogo(cor)) { 
+            foreach (Peca x in pecasEmJogo(cor))
+            {
                 bool[,] mat = x.movimentosPossiveis(); //matriz de movs possiveis de cada peça em jogo
                 for (int i = 0; i < x.posicao.linha; i++) //percorrendo linhas
                 {
                     for (int j = 0; j < x.posicao.coluna; j++) //percorrendo colunas
                     {
-                        if (mat[i,j]) //se tiver um movimento possível naquela linha e coluna
+                        if (mat[i, j]) //se tiver um movimento possível naquela linha e coluna
                         {
                             Posicao origem = x.posicao;
                             Posicao destino = new Posicao(i, j);
                             Peca pecaCapturada = executarMovimento(origem, destino); //vai executar o movimento
                             //a pecaCapturada só vai existir se tinha peça do adversário no destino
-                            bool testeXeque = estaEmXeque(cor); 
+                            bool testeXeque = estaEmXeque(cor);
                             desfazMovimento(origem, destino, pecaCapturada);
                             if (!testeXeque)
                             {
@@ -288,7 +308,7 @@ namespace xadrez
 
                         }
                     }
-                }                
+                }
             }
             return true; // se depois de tentar todas as jogadas possíveis nenhuma retirar do xeque, está em xequeMate (true)
         }
